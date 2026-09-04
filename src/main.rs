@@ -9,10 +9,10 @@ use anyhow::Result;
 use crossterm::{
     event::{self, Event},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 use kmutnb_phylab_plotter::{app::App, file_io, input, ui};
-use ratatui::{backend::CrosstermBackend, Terminal};
+use ratatui::{Terminal, backend::CrosstermBackend};
 
 fn main() -> Result<()> {
     let arg_path = env::args_os().nth(1).map(PathBuf::from);
@@ -53,12 +53,11 @@ fn run(terminal: &mut Terminal<CrosstermBackend<Stdout>>, app: &mut App) -> Resu
     loop {
         terminal.draw(|frame| ui::render(frame, app))?;
 
-        if event::poll(Duration::from_millis(200))? {
-            if let Event::Key(key) = event::read()? {
-                if !input::handle_key(app, key) {
-                    break;
-                }
-            }
+        if event::poll(Duration::from_millis(200))?
+            && let Event::Key(key) = event::read()?
+            && !input::handle_key(app, key)
+        {
+            break;
         }
     }
 
