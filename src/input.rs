@@ -172,10 +172,11 @@ fn handle_scale_input(app: &mut App, key: KeyEvent) -> bool {
             }
         }
         KeyCode::Char(ch) => {
-            if let Some(editor) = &mut app.scale_editor {
-                if !key.modifiers.contains(KeyModifiers::CONTROL) && is_scale_char(ch) {
-                    editor.buffers[editor.selected].push(ch);
-                }
+            if let Some(editor) = &mut app.scale_editor
+                && !key.modifiers.contains(KeyModifiers::CONTROL)
+                && is_scale_char(ch)
+            {
+                editor.buffers[editor.selected].push(ch);
             }
         }
         _ => {}

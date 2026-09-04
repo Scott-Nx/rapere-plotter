@@ -1,9 +1,9 @@
 use ratatui::{
+    Frame,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::{Block, Borders, Cell, Clear, Paragraph, Row, Table, Wrap},
-    Frame,
 };
 
 use crate::{
@@ -236,7 +236,9 @@ fn render_status(frame: &mut Frame, app: &App, area: Rect) {
         .map(|path| path.display().to_string())
         .unwrap_or_else(|| "unsaved: lab_data.csv".to_string());
     let help = match app.mode {
-        Mode::Normal => "?: help | i edit | a row | A col | d delete | X swap axes | s save | o open | S scale | G paper | q quit",
+        Mode::Normal => {
+            "?: help | i edit | a row | A col | d delete | X swap axes | s save | o open | S scale | G paper | q quit"
+        }
         Mode::Scale => "Enter apply | u auto scale | Esc cancel | j/k field",
         _ => "Enter confirm | Esc cancel",
     };
@@ -256,15 +258,24 @@ fn render_help(frame: &mut Frame, area: Rect) {
     let popup = centered_rect(area, 76, 24);
     frame.render_widget(Clear, popup);
     let text = vec![
-        Line::styled("Physics Lab Plotter Help", Style::default().add_modifier(Modifier::BOLD)),
+        Line::styled(
+            "Physics Lab Plotter Help",
+            Style::default().add_modifier(Modifier::BOLD),
+        ),
         Line::from(""),
-        Line::from("Navigation: h/j/k/l move table selection or graph crosshair, t focus table, g focus graph"),
+        Line::from(
+            "Navigation: h/j/k/l move table selection or graph crosshair, t focus table, g focus graph",
+        ),
         Line::from("Data: i edit cell, a add row, A add column, d delete row, r rename column"),
         Line::from("Files: s save CSV, o open CSV, q quit"),
-        Line::from("Graph: f toggle best-fit line, X swap axes, G graph paper mode, c toggle crosshair"),
+        Line::from(
+            "Graph: f toggle best-fit line, X swap axes, G graph paper mode, c toggle crosshair",
+        ),
         Line::from("Scale: S set manual scale, u return to auto scale while in scale dialog"),
         Line::from(""),
-        Line::from("Invalid or blank x/y values are shown in red in the table and ignored by fit/plot."),
+        Line::from(
+            "Invalid or blank x/y values are shown in red in the table and ignored by fit/plot.",
+        ),
         Line::from(
             "Manual scale fields: x min, x max, y min, y max, x major, y major, minor divisions.",
         ),

@@ -6,7 +6,7 @@ use ratatui::{
 use crate::{
     app::ScaleSettings,
     data::LabPoint,
-    stats::{linear_regression, Regression},
+    stats::{Regression, linear_regression},
 };
 
 const BRAILLE_WIDTH: usize = 2;
@@ -457,28 +457,28 @@ impl PlotRenderer {
         }
         graph.set(axis_col, axis_row, '+', Layer::Axis);
 
-        if self.options.show_fit {
-            if let Some(regression) = linear_regression(&self.points) {
-                for col in self.area.x..self.area.x + self.area.width {
-                    let x = self.cell_to_x(col);
-                    let y = regression.slope * x + regression.intercept;
-                    if let Some(row) = self.y_to_cell(y) {
-                        graph.set(col, row, '.', Layer::FitLine);
-                    }
+        if self.options.show_fit
+            && let Some(regression) = linear_regression(&self.points)
+        {
+            for col in self.area.x..self.area.x + self.area.width {
+                let x = self.cell_to_x(col);
+                let y = regression.slope * x + regression.intercept;
+                if let Some(row) = self.y_to_cell(y) {
+                    graph.set(col, row, '.', Layer::FitLine);
                 }
             }
         }
 
-        if let Some((x, y)) = self.options.crosshair {
-            if let (Some(col), Some(row)) = (self.x_to_cell(x), self.y_to_cell(y)) {
-                for c in self.area.x..self.area.x + self.area.width {
-                    graph.set(c, row, '-', Layer::Crosshair);
-                }
-                for r in self.area.y..self.area.y + self.area.height {
-                    graph.set(col, r, '|', Layer::Crosshair);
-                }
-                graph.set(col, row, 'X', Layer::Crosshair);
+        if let Some((x, y)) = self.options.crosshair
+            && let (Some(col), Some(row)) = (self.x_to_cell(x), self.y_to_cell(y))
+        {
+            for c in self.area.x..self.area.x + self.area.width {
+                graph.set(c, row, '-', Layer::Crosshair);
             }
+            for r in self.area.y..self.area.y + self.area.height {
+                graph.set(col, r, '|', Layer::Crosshair);
+            }
+            graph.set(col, row, 'X', Layer::Crosshair);
         }
 
         for point in &self.points {
@@ -901,11 +901,7 @@ fn nice_step(raw: f64) -> f64 {
 
 fn clean_float(value: f64) -> f64 {
     let rounded = (value * 1e12).round() / 1e12;
-    if rounded.abs() < 1e-12 {
-        0.0
-    } else {
-        rounded
-    }
+    if rounded.abs() < 1e-12 { 0.0 } else { rounded }
 }
 
 fn major_values(min: f64, max: f64, step: f64) -> Vec<f64> {
@@ -989,9 +985,10 @@ mod tests {
         );
         let text = lines.join("\n");
 
-        assert!(text
-            .chars()
-            .any(|ch| ('\u{2800}'..='\u{28ff}').contains(&ch)));
+        assert!(
+            text.chars()
+                .any(|ch| ('\u{2800}'..='\u{28ff}').contains(&ch))
+        );
         assert!(!text.contains("|||||"));
         assert!(!text.contains("!!!!!"));
         assert!(!text.contains(":::::"));
